@@ -1,12 +1,19 @@
 import jwt from 'jsonwebtoken';
 
+const isLocalClientUrl = (url) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(String(url || '').trim());
+
 const getCookieOptions = () => {
+  const clientUrl = String(process.env.CLIENT_URL || '').trim();
   const isProduction = process.env.NODE_ENV === 'production';
+  const useSecureCookie = isProduction || clientUrl.startsWith('https://');
+  const useCrossSiteCookie = useSecureCookie && clientUrl && !isLocalClientUrl(clientUrl);
 
   return {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure: useSecureCookie,
+    sameSite: useCrossSiteCookie ? 'none' : 'lax',
+    partitioned: useCrossSiteCookie ? true : undefined,
     maxAge: 1000 * 60 * 60 * 24 * 7,
     path: '/',
   };
