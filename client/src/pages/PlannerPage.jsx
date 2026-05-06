@@ -6,6 +6,7 @@ import PlannerForm from '../components/PlannerForm';
 import { useToast } from '../hooks/useToast';
 import { tripApi } from '../services/api';
 import { formatDateRange } from '../utils/formatters';
+import { useAuth } from '../context/AuthContext';
 
 const today = new Date().toISOString().slice(0, 10);
 const fiveDaysLater = new Date(Date.now() + 1000 * 60 * 60 * 24 * 4).toISOString().slice(0, 10);
@@ -37,6 +38,7 @@ const budgetLabelMap = {
 const PlannerPage = () => {
   const navigate = useNavigate();
   const { pushToast } = useToast();
+  const { logout } = useAuth();
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);
@@ -88,6 +90,23 @@ const PlannerPage = () => {
       });
       navigate('/result', { state: response.data });
     } catch (error) {
+      if (error.response?.status === 401) {
+        await logout().catch(() => {});
+        pushToast({
+          type: 'error',
+          title: 'Please log in again',
+          message: 'Your session is missing or expired. Sign in to generate your itinerary.',
+        });
+        navigate('/login', {
+          replace: true,
+          state: {
+            from: { pathname: '/planner' },
+            authMessage: 'Log in to generate, save, and manage your personalized AI itinerary.',
+          },
+        });
+        return;
+      }
+
       pushToast({
         type: 'error',
         title: 'Generation failed',

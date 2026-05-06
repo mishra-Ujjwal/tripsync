@@ -45,50 +45,6 @@ const ChipGroup = ({ options, value, onChange }) => (
   </div>
 );
 
-const GOOGLE_AUTOCOMPLETE_ENDPOINT = 'https://places.googleapis.com/v1/places:autocomplete';
-
-const mapGoogleSuggestions = (suggestions = []) =>
-  suggestions
-    .map((suggestion) => suggestion.placePrediction)
-    .filter(Boolean)
-    .map((prediction) => ({
-      placeId: prediction.place || '',
-      text: prediction.text?.text || '',
-      primaryText: prediction.structuredFormat?.mainText?.text || prediction.text?.text || '',
-      secondaryText: prediction.structuredFormat?.secondaryText?.text || '',
-    }))
-    .filter((prediction) => prediction.text);
-
-const fetchGoogleAutocompleteSuggestions = async (query) => {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  if (!apiKey) {
-    return [];
-  }
-
-  const response = await fetch(GOOGLE_AUTOCOMPLETE_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Goog-Api-Key': apiKey,
-      'X-Goog-FieldMask':
-        'suggestions.placePrediction.place,suggestions.placePrediction.text.text,suggestions.placePrediction.structuredFormat.mainText.text,suggestions.placePrediction.structuredFormat.secondaryText.text',
-    },
-    body: JSON.stringify({
-      input: query,
-      includedPrimaryTypes: ['(cities)', '(regions)'],
-      includeQueryPredictions: false,
-      languageCode: 'en',
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Google autocomplete failed with status ${response.status}`);
-  }
-
-  const data = await response.json();
-  return mapGoogleSuggestions(data?.suggestions || []);
-};
-
 const SearchableDestinationSelect = ({ value, onChange, options }) => {
   const [query, setQuery] = useState(value || '');
   const [open, setOpen] = useState(false);
@@ -137,14 +93,8 @@ const SearchableDestinationSelect = ({ value, onChange, options }) => {
     const timer = window.setTimeout(async () => {
       setLoading(true);
       try {
-        let nextSuggestions = [];
-
-        try {
-          nextSuggestions = await fetchGoogleAutocompleteSuggestions(trimmedQuery);
-        } catch (clientError) {
-          const fallbackResponse = await placesApi.autocomplete(trimmedQuery);
-          nextSuggestions = fallbackResponse.data || [];
-        }
+        const fallbackResponse = await placesApi.autocomplete(trimmedQuery);
+        const nextSuggestions = fallbackResponse.data || [];
 
         if (!active) return;
 

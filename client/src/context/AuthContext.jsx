@@ -31,13 +31,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (payload) => {
-    const response = await authApi.login(payload);
+    await authApi.login(payload);
+    const response = await authApi.me();
     setUser(response.data);
     return response.data;
   };
 
   const register = async (payload) => {
-    const response = await authApi.register(payload);
+    await authApi.register(payload);
+    const response = await authApi.me();
     setUser(response.data);
     return response.data;
   };
