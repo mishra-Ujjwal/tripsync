@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const defaultBaseURL = import.meta.env.PROD
+  ? 'https://tripsyncfinal.onrender.com/api'
+  : 'http://localhost:3000/api';
+
 const api = axios.create({
-  baseURL: "https://tripsyncfinal.onrender.com/api" ||import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || defaultBaseURL,
   withCredentials: true,
 });
 

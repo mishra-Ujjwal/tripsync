@@ -60,6 +60,17 @@ Frontend:
 
 - `VITE_API_BASE_URL`
 
+## Render Deploy
+
+Use these production URLs on Render:
+
+- Frontend URL: `https://tripsyncproject.onrender.com`
+- Backend URL: `https://tripsyncfinal.onrender.com`
+- Frontend `VITE_API_BASE_URL`: `https://tripsyncfinal.onrender.com/api`
+- Backend `CLIENT_URL`: `https://tripsyncproject.onrender.com`
+
+If you redeploy after changing environment variables, trigger a fresh deploy for both services so the new values are picked up.
+
 ## Features
 
 - Premium landing page and trip planner flow
