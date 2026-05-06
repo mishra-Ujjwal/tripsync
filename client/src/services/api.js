@@ -1,11 +1,21 @@
 import axios from 'axios';
 
-const defaultBaseURL = import.meta.env.PROD
-  ? 'https://tripsyncfinal.onrender.com/api'
-  : 'http://localhost:3000/api';
+const LOCAL_FRONTEND_ORIGIN = 'http://localhost:5173';
+const LOCAL_API_BASE_URL = 'http://localhost:3000/api';
+const PRODUCTION_API_BASE_URL = 'https://tripsyncfinal.onrender.com/api';
+
+const getBaseURL = () => {
+  if (typeof window === 'undefined') {
+    return PRODUCTION_API_BASE_URL;
+  }
+
+  return window.location.origin === LOCAL_FRONTEND_ORIGIN
+    ? LOCAL_API_BASE_URL
+    : PRODUCTION_API_BASE_URL;
+};
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || defaultBaseURL,
+  baseURL: getBaseURL(),
   withCredentials: true,
 });
 

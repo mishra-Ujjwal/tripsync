@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, UserPlus2 } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Sparkles, UserPlus2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LoadingScreen from '../components/LoadingScreen';
@@ -16,6 +16,7 @@ const RegisterPage = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const redirectTo = location.state?.from?.pathname || '/planner';
 
@@ -122,13 +123,23 @@ const RegisterPage = () => {
 
               <label className="block">
                 <span className="text-sm font-semibold text-slate-700">Password</span>
-                <input
-                  type="password"
-                  value={form.password}
-                  onChange={(event) => handleChange('password', event.target.value)}
-                  className="mt-2 w-full rounded-[1.25rem] border border-slate-200 bg-surface/70 px-4 py-3.5 text-sm text-slate-800 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
-                  placeholder="At least 8 characters"
-                />
+                <div className="relative mt-2">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={(event) => handleChange('password', event.target.value)}
+                    className="w-full rounded-[1.25rem] border border-slate-200 bg-surface/70 px-4 py-3.5 pr-12 text-sm text-slate-800 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                    placeholder="At least 8 characters"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((current) => !current)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-brand-500"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
                 {errors.password ? <p className="mt-2 text-sm text-rose-500">{errors.password}</p> : null}
               </label>
             </div>

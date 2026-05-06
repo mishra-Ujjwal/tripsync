@@ -65,7 +65,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   });
 
-  setAuthCookie(res, user._id.toString());
+  setAuthCookie(req, res, user._id.toString());
 
   res.status(201).json({
     success: true,
@@ -89,7 +89,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new Error('Invalid email or password');
   }
 
-  setAuthCookie(res, user._id.toString());
+  setAuthCookie(req, res, user._id.toString());
 
   res.status(200).json({
     success: true,
@@ -98,7 +98,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
-  clearAuthCookie(res);
+  clearAuthCookie(req, res);
 
   res.status(200).json({
     success: true,

@@ -54,22 +54,21 @@ Backend:
 - `OPENAI_MODEL`
 - `OPENAI_PREMIUM_MODEL`
 - `UNSPLASH_ACCESS_KEY`
-- `CLIENT_URL`
 
 Frontend:
 
-- `VITE_API_BASE_URL`
+- `VITE_GOOGLE_MAPS_API_KEY`
 
 ## Render Deploy
 
-Use these production URLs on Render:
+The app is hard-wired to these two frontend origins and backend targets:
 
 - Frontend URL: `https://tripsyncproject.onrender.com`
 - Backend URL: `https://tripsyncfinal.onrender.com`
-- Frontend `VITE_API_BASE_URL`: `https://tripsyncfinal.onrender.com/api`
-- Backend `CLIENT_URL`: `https://tripsyncproject.onrender.com`
+- Local frontend URL: `http://localhost:5173`
+- Local backend URL: `http://localhost:3000`
 
-If you redeploy after changing environment variables, trigger a fresh deploy for both services so the new values are picked up.
+The frontend automatically chooses the local backend when running on `http://localhost:5173`, and the Render backend everywhere else. The backend only accepts requests from `http://localhost:5173` and `https://tripsyncproject.onrender.com`, and cookie settings switch automatically based on the incoming request origin.
 
 ## Features
 

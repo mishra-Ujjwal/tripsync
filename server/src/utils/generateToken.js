@@ -1,19 +1,20 @@
 import jwt from 'jsonwebtoken';
 
-const isLocalClientUrl = (url) =>
-  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(String(url || '').trim());
+const LOCAL_FRONTEND_ORIGIN = 'http://localhost:5173';
 
-const getCookieOptions = () => {
-  const clientUrl = String(process.env.CLIENT_URL || '').trim();
-  const isProduction = process.env.NODE_ENV === 'production';
-  const useSecureCookie = isProduction || clientUrl.startsWith('https://');
-  const useCrossSiteCookie = useSecureCookie && clientUrl && !isLocalClientUrl(clientUrl);
+const isLocalRequest = (req) => {
+  const origin = String(req?.headers?.origin || '').trim();
+  return origin === LOCAL_FRONTEND_ORIGIN;
+};
+
+const getCookieOptions = (req) => {
+  const localRequest = isLocalRequest(req);
 
   return {
     httpOnly: true,
-    secure: useSecureCookie,
-    sameSite: useCrossSiteCookie ? 'none' : 'lax',
-    partitioned: useCrossSiteCookie ? true : undefined,
+    secure: !localRequest,
+    sameSite: localRequest ? 'lax' : 'none',
+    partitioned: localRequest ? undefined : true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
     path: '/',
   };
@@ -29,14 +30,14 @@ export const signAuthToken = (userId) => {
   });
 };
 
-export const setAuthCookie = (res, userId) => {
+export const setAuthCookie = (req, res, userId) => {
   const token = signAuthToken(userId);
-  res.cookie('auth_token', token, getCookieOptions());
+  res.cookie('auth_token', token, getCookieOptions(req));
 };
 
-export const clearAuthCookie = (res) => {
+export const clearAuthCookie = (req, res) => {
   res.clearCookie('auth_token', {
-    ...getCookieOptions(),
+    ...getCookieOptions(req),
     maxAge: undefined,
     expires: new Date(0),
   });
