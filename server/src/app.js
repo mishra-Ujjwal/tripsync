@@ -9,7 +9,7 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 const app = express();
 
 const allowedOrigins = [
-  "https://tripsyncproject.onrender.com/",
+  "https://tripsyncproject.onrender.com",
   process.env.CLIENT_URL,
   'http://localhost:5173',
   'http://localhost:5174',
